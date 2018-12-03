@@ -16,8 +16,8 @@ public class Puzzle2 {
 
             for (String line : lines) {
                 for (String line2 : copyOfLines) {
-                    String common = differenceBy1( line.toCharArray(), line2.toCharArray() );
-                    if( common != null ){
+                    String common = differenceBy1(line.toCharArray(), line2.toCharArray());
+                    if (common != null) {
 //                    if (isDifferentBy1(line, line2)) {
 //                        System.out.println(line);
 //                        System.out.println(line2);
