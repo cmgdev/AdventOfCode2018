@@ -1,0 +1,7 @@
+Advent of Code 2018
+
+Here are my solutions for Advent of Code 2018: https://adventofcode.com/2018
+
+First pass done in Java 8+, but I'm referencing the Java 10 API so I might end up using some features.
+
+I might go back and re-solve in other languages.
