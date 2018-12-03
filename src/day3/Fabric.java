@@ -1,7 +1,10 @@
 package day3;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Fabric {
 
@@ -34,40 +37,37 @@ public class Fabric {
     }
 
     public List<String> getIntactSlices() {
-        List<String> intactSlices = new ArrayList<>();
-
-        for (LineInfo lineInfo : lineInfos) {
-            if (cloth.isIntact(lineInfo)) intactSlices.add(lineInfo.getId());
-        }
-
-        return intactSlices;
+        return lineInfos.stream()
+                .filter(l -> cloth.isIntact(l))
+                .map(LineInfo::getId)
+                .collect(Collectors.toList());
     }
 
     private class Cloth {
-        private int[][] cloth;
+        Map<String, Integer> cloth;
 
         public Cloth(int x, int y) {
-            this.cloth = new int[x][y];
+            this.cloth = new HashMap<>();
+        }
+
+        private String getKey(int x, int y) {
+            return x + "." + y;
         }
 
         public void occupy(int x, int y) {
-            cloth[x][y]++;
+            cloth.merge(getKey(x, y), 1, (a, b) -> a + b);
         }
 
         public boolean isOverOccupied(int x, int y) {
-            return cloth[x][y] > 1;
+            return cloth.get(getKey(x, y)) > 1;
         }
 
         public int countOverlaps() {
-            int count = 0;
-            for (int i = 0; i < cloth.length; i++) {
-                for (int j = 0; j < cloth[i].length; j++) {
-                    if (isOverOccupied(i, j)) {
-                        count++;
-                    }
-                }
-            }
-            return count;
+            return Math.toIntExact(
+                    cloth.values().stream()
+                            .filter(i -> i > 1)
+                            .count()
+            );
         }
 
         public boolean isIntact(LineInfo lineInfo) {
