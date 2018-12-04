@@ -1,9 +1,6 @@
 package day3;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class Fabric {
@@ -24,7 +21,7 @@ public class Fabric {
 
             for (int i = lineInfo.getStartX(); i < lineInfo.getEndX(); i++) {
                 for (int j = lineInfo.getStartY(); j < lineInfo.getEndY(); j++) {
-                    cloth.occupy(i, j);
+                    cloth.occupy(i, j, lineInfo.getId());
                 }
             }
         }
@@ -37,14 +34,15 @@ public class Fabric {
     }
 
     public List<String> getIntactSlices() {
-        return lineInfos.stream()
-                .filter(l -> cloth.isIntact(l))
+        List<String> intact = lineInfos.stream()
                 .map(LineInfo::getId)
                 .collect(Collectors.toList());
+        intact.removeAll(cloth.getOverOccupiedIds());
+        return intact;
     }
 
     private class Cloth {
-        Map<String, Integer> cloth;
+        Map<String, List<String>> cloth;
 
         public Cloth(int x, int y) {
             this.cloth = new HashMap<>();
@@ -54,18 +52,20 @@ public class Fabric {
             return x + "." + y;
         }
 
-        public void occupy(int x, int y) {
-            cloth.merge(getKey(x, y), 1, (a, b) -> a + b);
+        public void occupy(int x, int y, String id) {
+            List<String> l = cloth.getOrDefault(getKey(x, y), new ArrayList<>());
+            l.add(id);
+            cloth.put(getKey(x, y), l);
         }
 
         public boolean isOverOccupied(int x, int y) {
-            return cloth.get(getKey(x, y)) > 1;
+            return cloth.getOrDefault(getKey(x, y), new ArrayList<>()).size() > 1;
         }
 
         public int countOverlaps() {
             return Math.toIntExact(
                     cloth.values().stream()
-                            .filter(i -> i > 1)
+                            .filter(i -> i.size() > 1)
                             .count()
             );
         }
@@ -79,6 +79,13 @@ public class Fabric {
                 }
             }
             return true;
+        }
+
+        public Collection<String> getOverOccupiedIds() {
+            return cloth.values().stream()
+                    .filter(l -> l.size() > 1)
+                    .flatMap(l -> l.stream())
+                    .collect(Collectors.toSet());
         }
     }
 
