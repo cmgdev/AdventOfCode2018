@@ -73,6 +73,22 @@ public class Puzzle {
             /******************************************
              * Second answer
              ******************************************/
+            maxEntry = null;
+            maxMinute = 0;
+            maxMinuteAmount = 0;
+            for( Map.Entry<String, int[]> entry : guardSleep.entrySet()){
+                for( int i = 0; i < entry.getValue().length; i++){
+                    if(entry.getValue()[i] > maxMinuteAmount){
+                        maxMinuteAmount = entry.getValue()[i];
+                        maxMinute = i;
+                        maxEntry = entry;
+                    }
+                }
+            }
+
+            // 65854
+            System.out.println( "Second answer: " + maxEntry.getKey() + "x" + maxMinute);
+
 
         } catch (Exception e) {
             System.out.println("Oh shit! " + e);
