@@ -1,50 +1,52 @@
 package day7;
 
-import java.io.File;
-import java.nio.file.Files;
+import base.AbstractPuzzle;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class Puzzle {
+public class Puzzle extends AbstractPuzzle {
 
     public static final boolean IS_TEST = false;
-    public static final String fileName = IS_TEST ? "example.txt" : "input.txt";
-    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day7/" + fileName;
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int NUM_WORKERS = IS_TEST ? 2 : 5;
     public static final int MIN_SECONDS = IS_TEST ? 0 : 60;
 
+    public Puzzle() {
+        super(IS_TEST);
+    }
+
     public static void main(String[] args) {
-        List<String> input = new ArrayList<>();
+        Puzzle puzzle = new Puzzle();
+        List<String> input = puzzle.readFile(7);
 
-        try {
-            input = Files.readAllLines(new File(INPUT_FILE).toPath());
-        } catch (Exception e) {
-            System.out.println("Oh shit! " + e);
-        }
-
-        Map<String, List<String>> stepsAndSuccessors = getStepsAndSuccessors(input);
+        StateMachine stateMachine = new StateMachine(MIN_SECONDS);
+        stateMachine.build(input);
 
         /********************************
          * Part 1
          ********************************/
         String result = "";
-        while (!stepsAndSuccessors.isEmpty()) {
-            String nextStep = getNextStep(stepsAndSuccessors);
+        while (stateMachine.hasMoreSteps()) {
+            String nextStep = stateMachine.getNextStep();
             result += nextStep;
-            stepsAndSuccessors.remove(nextStep);
+            stateMachine.completeStep(nextStep);
         }
 
         System.out.println("Result is " + result);
+        System.out.print("Pass? ");
         if (IS_TEST) {
             System.out.println(result.equals("CABDFE"));
+        } else {
+            System.out.println(result.equals("IJLFUVDACEHGRZPNKQWSBTMXOY"));
         }
 
         System.out.println();
         /********************************
          * Part 2
          ********************************/
-        stepsAndSuccessors = getStepsAndSuccessors(input);
+        stateMachine = new StateMachine(MIN_SECONDS);
+        stateMachine.build(input);
 
         result = "";
         int seconds = 0;
@@ -53,10 +55,7 @@ public class Puzzle {
             workers.put(Integer.toString(i), 0);
         }
 
-        printHeaders();
-
-        while (!stepsAndSuccessors.isEmpty()) {
-            Set<String> currentSteps = new HashSet<>(workers.keySet());
+        while (stateMachine.hasMoreSteps()) {
             List<String> finishedWorkers = new ArrayList<>();
             Map<String, Integer> newWorkers = new HashMap<>();
 
@@ -67,12 +66,10 @@ public class Puzzle {
                 Map.Entry<String, Integer> worker = entries.get(i);
                 if (worker.getValue() == 0) {
                     finishedWorkers.add(worker.getKey());
-                    currentSteps.remove(worker.getKey());
-                    stepsAndSuccessors.remove(worker.getKey());
-                    String nextStep = getNextStep(stepsAndSuccessors, currentSteps);
+                    stateMachine.completeStep(worker.getKey());
+                    String nextStep = stateMachine.getNextStep();
                     if (nextStep != null) {
-                        newWorkers.put(nextStep, ALPHABET.indexOf(nextStep) + MIN_SECONDS);
-                        currentSteps.add(nextStep);
+                        newWorkers.put(nextStep, stateMachine.getStepCost(nextStep));
                     }
                 } else {
                     int current = worker.getValue();
@@ -91,11 +88,11 @@ public class Puzzle {
                 workers.put(Integer.toString(i), 0);
             }
 
-            System.out.print(seconds + "\t\t");
-            for (String worker : workers.keySet()) {
-                System.out.print(worker + "\t\t\t");
-            }
-            System.out.println(result);
+//            printHeaders();
+//            System.out.print(seconds + "\t\t");
+//            for (String worker : workers.keySet()) {
+//                System.out.print(worker + "\t\t\t");
+//            }
 
             seconds++;
         }
@@ -103,10 +100,13 @@ public class Puzzle {
         seconds--;
         System.out.println("Result is " + result);
         System.out.println("Time is " + seconds); //1072
-
+        System.out.println("Pass? ");
         if (IS_TEST) {
             System.out.println(result.equals("CABFDE"));
             System.out.println(seconds == 15);
+        } else {
+            System.out.println(result.equals("IJLVFDUHACERGZPNQKWSBTMXOY"));
+            System.out.println(seconds == 1072);
         }
     }
 
@@ -116,51 +116,6 @@ public class Puzzle {
             System.out.print("Worker " + (i + 1) + "\t");
         }
         System.out.println("Done");
-    }
-
-    private static Map<String, List<String>> getStepsAndSuccessors(List<String> input) {
-        Map<String, List<String>> stepsAndSuccessors = new HashMap<>();
-        for (String line : input) {
-            String step = line.substring(5, 6);
-            String successor = line.substring(36, 37);
-            List<String> successors = stepsAndSuccessors.getOrDefault(step, new ArrayList<>());
-            successors.add(successor);
-            stepsAndSuccessors.put(step, successors);
-
-            if (!stepsAndSuccessors.containsKey(successor)) {
-                stepsAndSuccessors.put(successor, new ArrayList<>());
-            }
-        }
-        System.out.println(stepsAndSuccessors);
-        return stepsAndSuccessors;
-    }
-
-    private static String getNextStep(Map<String, List<String>> stepsAndSuccessors) {
-        List<String> allSuccessors = stepsAndSuccessors.values().stream().flatMap(l -> l.stream()).distinct().collect(Collectors.toList());
-        List<String> allPredecessors = new ArrayList(stepsAndSuccessors.keySet());
-
-        allPredecessors.removeAll(allSuccessors);
-        Collections.sort(allPredecessors);
-
-        return allPredecessors.get(0);
-    }
-
-    private static String getNextStep(Map<String, List<String>> stepsAndSuccessors, Collection<String> inProgress) {
-        List<String> allSuccessors = stepsAndSuccessors.values().stream()
-                .flatMap(l -> l.stream())
-                .distinct()
-                .collect(Collectors.toList());
-        List<String> allPredecessors = new ArrayList(stepsAndSuccessors.keySet());
-
-        allPredecessors.removeAll(allSuccessors);
-        allPredecessors.removeAll(inProgress);
-        Collections.sort(allPredecessors);
-
-        if (!allPredecessors.isEmpty()) {
-            return allPredecessors.get(0);
-        } else {
-            return null;
-        }
     }
 
 }
