@@ -39,8 +39,8 @@ public class Puzzle {
             }
         }
 
-        System.out.println( "Shortest length is " + shortestLength);
-        System.out.println( "By removing " + removed );
+        System.out.println( "Shortest length is " + shortestLength); // 6694
+        System.out.println( "By removing " + removed ); // d/D
     }
 
     private static String doPolymerReaction(String input) {
