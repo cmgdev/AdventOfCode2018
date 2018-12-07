@@ -9,6 +9,7 @@ public class Puzzle {
     public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day6/input.txt";
     public static final boolean IS_TEST = false;
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    public static final int LARGEST_MANHATTAN_SUM = IS_TEST ? 32 : 10000;
 
     public static void main(String[] args) {
         List<String> input = Arrays.asList("1, 1", "1, 6", "8, 3", "3, 4", "5, 5", "8, 9");
@@ -33,14 +34,57 @@ public class Puzzle {
             }
         }
 
-        String[][] mapAsArray = mapToArray(map);
-        printMap(mapAsArray);
+        /**********************
+         * Part 1
+         **********************/
+        String[][] mapAsArray = mapToArray(map, true);
+//        printMap(mapAsArray);
 
         System.out.println("Largest area is " + getSizeOfLargestFiniteArea(mapAsArray));
 
+        /**********************
+         * Part 2
+         **********************/
+        mapAsArray = mapToArray(map, false);
+        printMap(mapAsArray);
+
+        System.out.println("Size of region closest to coordinates is " + getSizeOfClosestRegion(mapAsArray, map));
+
+    }
+
+    private static int getSizeOfClosestRegion(String[][] mapAsArray, Map<String, String> map) {
+        int size = 0;
+        for (int i = 0; i < mapAsArray.length; i++) {
+            for (int j = 0; j < mapAsArray[i].length; j++) {
+                int sum = getSumOfManhattanDistances(i, j, map);
+                if (sum != -1) {
+                    size++;
+                }
+            }
+        }
+
+        return size;
+    }
+
+    private static int getSumOfManhattanDistances(int x, int y, Map<String, String> map) {
+        int sum = 0;
+
+        for (Map.Entry<String, String> entry : map.entrySet()) {
+            String[] tokens = entry.getKey().split(",");
+            int thisWidth = Integer.parseInt(tokens[0]);
+            int thisHeight = Integer.parseInt(tokens[1]);
+            sum += getManhattanDistance(x, y, thisWidth, thisHeight);
+            if (sum >= LARGEST_MANHATTAN_SUM) {
+                return -1;
+            }
+        }
+
+        return sum;
     }
 
     private static void printMap(String[][] mapAsArray) {
+        // the data is correct but got height/width mixed up somewhere
+        // have to swap i & j on the array to print correctly
         for (int i = 0; i < mapAsArray[0].length; i++) {
             for (int j = 0; j < mapAsArray.length; j++) {
                 System.out.print(mapAsArray[j][i]);
@@ -49,7 +93,7 @@ public class Puzzle {
         }
     }
 
-    private static String[][] mapToArray(Map<String, String> map) {
+    private static String[][] mapToArray(Map<String, String> map, boolean part1) {
         int[] arraySize = getArraySize(map.keySet());
         int width = arraySize[0];
         int height = arraySize[1];
@@ -66,7 +110,11 @@ public class Puzzle {
         for (int i = 0; i < width; i++) {
             for (int j = 0; j < height; j++) {
                 if (mapAsChars[i][j] == null) {
-                    mapAsChars[i][j] = getClosestLetter(i, j, map);
+                    if (part1) {
+                        mapAsChars[i][j] = getClosestLetter(i, j, map);
+                    } else {
+                        mapAsChars[i][j] = ".";
+                    }
                 }
             }
         }
