@@ -46,7 +46,7 @@ public class Puzzle {
          * Part 2
          **********************/
         mapAsArray = mapToArray(map, false);
-        printMap(mapAsArray);
+//        printMap(mapAsArray);
 
         System.out.println("Size of region closest to coordinates is " + getSizeOfClosestRegion(mapAsArray, map));
 
