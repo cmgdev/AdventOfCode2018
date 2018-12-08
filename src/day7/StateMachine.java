@@ -19,34 +19,34 @@ public class StateMachine {
         for (String line : input) {
             String step = line.substring(5, 6);
             String successor = line.substring(36, 37);
-            List<String> successors = stateMachine.getOrDefault(step, new ArrayList<>());
+            List<String> successors = this.stateMachine.getOrDefault(step, new ArrayList<>());
             successors.add(successor);
-            stateMachine.put(step, successors);
+            this.stateMachine.put(step, successors);
 
-            if (!stateMachine.containsKey(successor)) {
-                stateMachine.put(successor, new ArrayList<>());
+            if (!this.stateMachine.containsKey(successor)) {
+                this.stateMachine.put(successor, new ArrayList<>());
             }
         }
     }
 
     public int getStepCost(String step) {
-        return AbstractPuzzle.ALPHABET_UPPER.indexOf(step) + minCostPerStep;
+        return AbstractPuzzle.ALPHABET_UPPER.indexOf(step) + minCostPerStep + 1;
     }
 
     public String getNextStep() {
-        List<String> allSuccessors = stateMachine.values().stream()
+        List<String> allSuccessors = this.stateMachine.values().stream()
                 .flatMap(l -> l.stream())
                 .distinct()
                 .collect(Collectors.toList());
-        List<String> allPredecessors = new ArrayList(stateMachine.keySet());
+        List<String> allPredecessors = new ArrayList(this.stateMachine.keySet());
 
         allPredecessors.removeAll(allSuccessors);
-        allPredecessors.removeAll(inProgress);
+        allPredecessors.removeAll(this.inProgress);
         Collections.sort(allPredecessors);
 
         if (!allPredecessors.isEmpty()) {
             String nextStep = allPredecessors.get(0);
-            inProgress.add(nextStep);
+            this.inProgress.add(nextStep);
             return nextStep;
         } else {
             return null;
@@ -58,8 +58,8 @@ public class StateMachine {
     }
 
     public void completeStep(String step) {
-        inProgress.remove(step);
-        stateMachine.remove(step);
+        this.inProgress.remove(step);
+        this.stateMachine.remove(step);
     }
 
 }

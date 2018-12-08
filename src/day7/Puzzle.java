@@ -2,13 +2,11 @@ package day7;
 
 import base.AbstractPuzzle;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.List;
 
 public class Puzzle extends AbstractPuzzle {
 
     public static final boolean IS_TEST = false;
-    public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int NUM_WORKERS = IS_TEST ? 2 : 5;
     public static final int MIN_SECONDS = IS_TEST ? 0 : 60;
 
@@ -48,66 +46,51 @@ public class Puzzle extends AbstractPuzzle {
         stateMachine = new StateMachine(MIN_SECONDS);
         stateMachine.build(input);
 
+        WorkCrew workCrew = new WorkCrew(NUM_WORKERS);
+
         result = "";
-        int seconds = 0;
-        Map<String, Integer> workers = new TreeMap<>();
-        for (int i = 0; i < NUM_WORKERS; i++) {
-            workers.put(Integer.toString(i), 0);
-        }
+        printHeaders();
+
 
         while (stateMachine.hasMoreSteps()) {
-            List<String> finishedWorkers = new ArrayList<>();
-            Map<String, Integer> newWorkers = new HashMap<>();
-
-            List<Map.Entry<String, Integer>> entries = new ArrayList<>(workers.entrySet());
-            entries.sort(Map.Entry.comparingByValue());
-
-            for (int i = entries.size() - 1; i >= 0; i--) {
-                Map.Entry<String, Integer> worker = entries.get(i);
-                if (worker.getValue() == 0) {
-                    finishedWorkers.add(worker.getKey());
-                    stateMachine.completeStep(worker.getKey());
+            System.out.print(workCrew.getTimeWorking() + "\t\t");
+            List<WorkCrew.Worker> workers = workCrew.startIteration();
+            for (WorkCrew.Worker worker : workers) {
+                String currentStep = worker.doWork();
+                if (currentStep.matches("[A-Z]") && worker.isAvailable()) {
+                    result += currentStep;
+                    stateMachine.completeStep(currentStep);
+                }
+                if (worker.isAvailable()) {
                     String nextStep = stateMachine.getNextStep();
                     if (nextStep != null) {
-                        newWorkers.put(nextStep, stateMachine.getStepCost(nextStep));
+                        worker.startStep(nextStep, stateMachine.getStepCost(nextStep));
                     }
-                } else {
-                    int current = worker.getValue();
-                    worker.setValue(current - 1);
                 }
             }
 
-            for (String worker : finishedWorkers) {
-                workers.remove(worker);
-                if (worker.matches("[A-Z]")) {
-                    result += worker;
-                }
+            for (WorkCrew.Worker worker : workCrew.workersInIDOrder()) {
+                System.out.print(worker.getCurrentStep() + "\t\t\t");
             }
-            workers.putAll(newWorkers);
-            for (int i = workers.size(); i < NUM_WORKERS; i++) {
-                workers.put(Integer.toString(i), 0);
-            }
-
-//            printHeaders();
-//            System.out.print(seconds + "\t\t");
-//            for (String worker : workers.keySet()) {
-//                System.out.print(worker + "\t\t\t");
-//            }
-
-            seconds++;
+            System.out.println(result);
         }
 
-        seconds--;
+        int seconds = workCrew.getTimeWorking() - 1;
         System.out.println("Result is " + result);
         System.out.println("Time is " + seconds); //1072
         System.out.println("Pass? ");
-        if (IS_TEST) {
+        if (IS_TEST)
+
+        {
             System.out.println(result.equals("CABFDE"));
             System.out.println(seconds == 15);
-        } else {
+        } else
+
+        {
             System.out.println(result.equals("IJLVFDUHACERGZPNQKWSBTMXOY"));
             System.out.println(seconds == 1072);
         }
+
     }
 
     private static void printHeaders() {
