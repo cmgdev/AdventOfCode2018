@@ -33,6 +33,18 @@ public class Puzzle extends AbstractPuzzle {
             System.out.println(sumAllMetadata == 49180);
         }
 
+        System.out.println();
+        /**************************
+         * Part 2
+         **************************/
+        int rootValue = tree.getNodeValue();
+
+        System.out.println("Value is " + rootValue);
+        if (IS_TEST) {
+            System.out.println(rootValue == 66);
+        } else {
+            System.out.println(rootValue == 20611);
+        }
     }
 
 }

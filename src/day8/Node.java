@@ -30,9 +30,9 @@ public class Node {
         metadata.add(data);
     }
 
-    public int getSumAllMetadata(){
+    public int getSumAllMetadata() {
         int sum = getMetadataSum();
-        for( Node child: children ){
+        for (Node child : children) {
             sum += child.getSumAllMetadata();
         }
         return sum;
@@ -44,5 +44,17 @@ public class Node {
                 .sum();
     }
 
+    public int getNodeValue() {
+        if (children.size() == 0) {
+            return getMetadataSum();
+        }
 
+        int value = 0;
+        for (int m : metadata) {
+            if (m <= children.size()) {
+                value += children.get(m - 1).getNodeValue();
+            }
+        }
+        return value;
+    }
 }
