@@ -1,74 +1,69 @@
 package day9;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class Puzzle {
 
-    public static final int[] TEST_DATA_1 = new int[]{9, 25, 32};
-    public static final int[] TEST_DATA_2 = new int[]{10, 1618, 8317};
-    public static final int[] TEST_DATA_3 = new int[]{13, 7999, 146373};
-    public static final int[] TEST_DATA_4 = new int[]{17, 1104, 2764};
-    public static final int[] TEST_DATA_5 = new int[]{21, 6111, 54718};
-    public static final int[] TEST_DATA_6 = new int[]{30, 5807, 37305};
-    public static final int[] TEST_DATA_7 = new int[]{419, 72164, 423717};
-    public static final int[] TEST_DATA_8 = new int[]{419, 7216400};
-
+    public static final long[] TEST_DATA_1 = new long[]{9, 25, 32};
+    public static final long[] TEST_DATA_2 = new long[]{10, 1618, 8317};
+    public static final long[] TEST_DATA_3 = new long[]{13, 7999, 146373};
+    public static final long[] TEST_DATA_4 = new long[]{17, 1104, 2764};
+    public static final long[] TEST_DATA_5 = new long[]{21, 6111, 54718};
+    public static final long[] TEST_DATA_6 = new long[]{30, 5807, 37305};
+    public static final long[] TEST_DATA_7 = new long[]{419, 72164, 423717};
+    public static final long[] TEST_DATA_8 = new long[]{419, 7216400, 3553108197L};
+    public static final List<long[]> DATA_SETS = Arrays.asList(TEST_DATA_1, TEST_DATA_2, TEST_DATA_3, TEST_DATA_4, TEST_DATA_5, TEST_DATA_6, TEST_DATA_7, TEST_DATA_8);
 
     public static void main(String[] args) {
-        int[] input = TEST_DATA_8;
+        for (long[] input : DATA_SETS) {
 
-        int numPlayers = input[0];
-        int highestMarble = input[1];
+            int numPlayers = (int) input[0];
+            long highestMarble = input[1];
 
-        List<Integer> marbles = new ArrayList<>();
-        marbles.add(0);
+            LinkedList<Integer> marbles = new LinkedList<>();
+            marbles.add(0);
 
-        System.out.println("[-] " + marbles);
+            int currentMarble = 1;
+            long[] playerScores = new long[numPlayers];
 
-        int currentMarble = 1;
-        int currentPlayer = 0;
-        int currentIndex = 0;
+            while (currentMarble <= highestMarble) {
 
-        Map<Integer, Integer> playerScores = new HashMap<>();
+                if (currentMarble % 23 == 0) {
+//                    System.out.println(currentMarble);
+                    for (int i = 0; i < 7; i++) {
+                        Integer m = marbles.remove();
+                        marbles.addLast(m);
+                    }
 
-        while (currentMarble <= highestMarble) {
-            System.out.println(currentMarble);
-            if (currentMarble % 23 == 0) {
-                int playerScore = playerScores.getOrDefault(currentPlayer + 1, 0);
-                playerScore += currentMarble;
-
-                currentIndex = (currentIndex - 7) % marbles.size();
-                if(currentIndex < 0){
-                    currentIndex = marbles.size() + currentIndex;
+                    int currentPlayer = currentMarble % numPlayers;
+                    playerScores[currentPlayer] += currentMarble + marbles.pop();
+                    Integer m = marbles.removeLast();
+                    marbles.addFirst(m);
+                } else {
+                    Integer m = marbles.removeLast();
+                    marbles.addFirst(m);
+                    marbles.push(currentMarble);
                 }
-
-                int additionalMarble = marbles.remove(currentIndex);
-                playerScore += additionalMarble;
-
-                playerScores.put(currentPlayer + 1, playerScore);
-
-//                System.out.println("[" + (currentPlayer + 1) + "] " + marbles);
-            } else {
-                currentIndex = (currentIndex + 1) % marbles.size() + 1;
-                marbles.add(currentIndex, currentMarble);
+                currentMarble++;
             }
 
-            currentMarble++;
-            currentPlayer = (currentPlayer + 1) % numPlayers;
-        }
+            long highestScore = 0;
+            for (int i = 0; i < playerScores.length; i++) {
+                if (playerScores[i] > highestScore) {
+                    highestScore = playerScores[i];
+                }
+            }
 
-        System.out.println(playerScores);
-
-        int highestScore = playerScores.values().stream()
-                .mapToInt(Integer::intValue)
-                .max().getAsInt();
-
-        System.out.println("Highest score is " + highestScore);
-        if (input.length > 2) {
-            System.out.println(input[2] == highestScore);
+            boolean pass = false;
+            System.out.println("Highest score is " + highestScore);
+            if (input.length > 2) {
+                pass = input[2] == highestScore;
+            }
+            System.out.println(pass);
+            if (!pass) {
+                System.out.println("Test failed!");
+                break;
+            }
         }
     }
 }
