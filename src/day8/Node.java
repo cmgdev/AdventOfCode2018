@@ -57,4 +57,12 @@ public class Node {
         }
         return value;
     }
+
+    @Override
+    public String toString() {
+        return "Node{" +
+                "children=" + children +
+                ", metadata=" + metadata +
+                '}';
+    }
 }
