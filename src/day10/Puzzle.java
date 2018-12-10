@@ -2,6 +2,7 @@ package day10;
 
 import base.AbstractPuzzle;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -46,34 +47,18 @@ public class Puzzle extends AbstractPuzzle {
       int seconds = 0;
 
       while ( cont ) {
-         int minX = 0;
-         int maxX = 0;
-         int minY = 0;
-         int maxY = 0;
+         int minX = points.stream().mapToInt( Point::getX ).min().getAsInt();
+         int maxX = points.stream().mapToInt( Point::getX ).max().getAsInt();
+         int minY = points.stream().mapToInt( Point::getY ).min().getAsInt();
+         int maxY = points.stream().mapToInt( Point::getY ).max().getAsInt();
          boolean checkContinue = true;
-         for ( Point point : points ) {
-            int x = point.getX();
-            int y = point.getY();
-            if ( x < minX ) {
-               minX = x;
-            }
-            if ( x > maxX ) {
-               maxX = x;
-            }
-            if ( y < minY ) {
-               minY = y;
-            }
-            if ( y > maxY ) {
-               maxY = y;
-            }
-         }
 
          int xRange = Math.abs( minX ) + Math.abs( maxX ) + 1;
          int yRange = Math.abs( minY ) + Math.abs( maxY ) + 1;
          int xOffset = Math.abs( minX );
          int yOffset = Math.abs( minY );
 
-         if ( xRange < 250 && yRange < 250 ) {
+         if ( xRange < 250 || yRange < 250 ) {
             String[][] chart = new String[yRange][xRange];
             for ( Point point : points ) {
                int x = point.getX() + xOffset;
@@ -81,11 +66,11 @@ public class Puzzle extends AbstractPuzzle {
                chart[y][x] = "#";
             }
 
-            for ( int i = 0; i < yRange; i++ ) {
-               for ( int j = 0; j < xRange; j++ ) {
-                  String s = chart[i][j];
+            for ( int i = minY; i <= maxY; i++ ) {
+               for ( int j = minX; j <= maxX; j++ ) {
+                  String s = chart[i + yOffset][j + xOffset];
                   if ( s != null ) {
-                     System.out.print( chart[i][j] );
+                     System.out.print( chart[i + yOffset][j + xOffset] );
                   }
                   else {
                      System.out.print( "." );
