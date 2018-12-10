@@ -1,11 +1,11 @@
-package day5;
+package day05;
 
 import java.io.File;
 import java.nio.file.Files;
 
 public class Puzzle {
 
-    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day5/input.txt";
+    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day05/input.txt";
     public static final boolean IS_TEST = false;
     public static final String ALPHABET = "abcdefghijklmnopqrstuvwxyz";
 

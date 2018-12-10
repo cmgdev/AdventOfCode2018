@@ -1,4 +1,4 @@
-package day2;
+package day02;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -7,7 +7,7 @@ import java.util.List;
 
 public class Puzzle2 {
 
-    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day2/input.txt";
+    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day02/input.txt";
 
     public static void main(String[] args) {
         try {

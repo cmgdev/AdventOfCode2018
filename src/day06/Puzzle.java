@@ -1,4 +1,4 @@
-package day6;
+package day06;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -6,7 +6,7 @@ import java.util.*;
 
 public class Puzzle {
 
-    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day6/input.txt";
+    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day06/input.txt";
     public static final boolean IS_TEST = false;
     public static final String ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
     public static final int LARGEST_MANHATTAN_SUM = IS_TEST ? 32 : 10000;

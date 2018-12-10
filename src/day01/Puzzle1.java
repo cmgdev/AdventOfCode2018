@@ -1,4 +1,4 @@
-package day1;
+package day01;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -6,7 +6,7 @@ import java.util.List;
 
 public class Puzzle1 {
 
-    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day1/input.txt";
+    public static final String INPUT_FILE = System.getProperty("user.dir") + "/out/production/advent2018/day01/input.txt";
 
     public static void main(String[] args) {
         int sum = 0;

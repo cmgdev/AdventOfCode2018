@@ -17,7 +17,9 @@ public abstract class AbstractPuzzle {
 
     public List<String> readFile(int day) {
         String fileName = isTest ? "example.txt" : "input.txt";
-        String inputFile = System.getProperty("user.dir") + "/out/production/advent2018/day" + day + "/" + fileName;
+        String dayString = day < 10 ? "0" + day : Integer.toString( day );
+
+        String inputFile = System.getProperty("user.dir") + "/out/production/advent2018/day" + dayString + "/" + fileName;
 
         List<String> input = new ArrayList<>();
 
