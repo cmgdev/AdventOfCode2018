@@ -43,6 +43,7 @@ public class Puzzle extends AbstractPuzzle {
 
       Scanner in = new Scanner( System.in );
       boolean cont = true;
+      int seconds = 0;
 
       while ( cont ) {
          int minX = 0;
@@ -99,7 +100,7 @@ public class Puzzle extends AbstractPuzzle {
             checkContinue = false;
          }
          if( checkContinue) {
-            System.out.print( "Continue? y/n " );
+            System.out.print( "(" + seconds + ") Continue? y/n " );
             String r = in.next();
             if ( !r.equalsIgnoreCase( "y" ) ) {
                cont = false;
@@ -109,6 +110,7 @@ public class Puzzle extends AbstractPuzzle {
             for ( Point point : points ) {
                point.increment();
             }
+            seconds++;
          }
       }
 
